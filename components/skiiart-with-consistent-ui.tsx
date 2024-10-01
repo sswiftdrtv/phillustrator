@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Wand2, Dice6, Loader2, Download } from 'lucide-react';
+import { Wand2, Dice6, Download } from 'lucide-react';
 import Image from 'next/image';
 
 const backgroundImages = [
@@ -128,8 +128,9 @@ export default function Component() {
   };
 
   const handleDownload = (imageUrl: string, index: number) => {
-    // Implement download logic here
+    // Download logic here
     console.log(`Downloading image ${index + 1}: ${imageUrl}`);
+    // Implement actual download functionality
   };
 
   return (
@@ -279,9 +280,9 @@ export default function Component() {
                       />
                       <button
                         onClick={() => handleDownload(imageUrl, index)}
-                        className="absolute bottom-2 right-2 bg-black bg-opacity-50 p-2 rounded-full text-white transition-opacity duration-200"
+                        className="absolute bottom-3 right-3 bg-black bg-opacity-50 p-3 rounded-full text-white transition-all duration-200 active:scale-95"
                       >
-                        <Download size={20} />
+                        <Download size={24} />
                       </button>
                     </div>
                   ))}
