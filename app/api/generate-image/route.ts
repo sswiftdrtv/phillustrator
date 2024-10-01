@@ -1,10 +1,7 @@
-// app/api/generate-image/route.ts
 import { NextResponse } from 'next/server';
 import { generateImage } from '@/lib/replicate';
 
-export const config = {
-  runtime: 'edge',
-};
+export const runtime = 'edge';
 
 export async function POST(request: Request) {
   try {
