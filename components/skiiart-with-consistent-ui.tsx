@@ -102,18 +102,25 @@ export default function Component() {
         body: JSON.stringify({ prompt }),
       });
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
       const data = await response.json();
       if (data.imageUrls && Array.isArray(data.imageUrls)) {
         setGeneratedImages(data.imageUrls);
       } else {
         console.error('Unexpected response format:', data);
+        throw new Error('Invalid response format');
       }
     } catch (error) {
       console.error('Error generating images:', error);
+      // Display an error message to the user
+      alert('Failed to generate images. Please try again later.');
+    } finally {
+      setIsLoading(false);
+      console.log('Generate completed: Loading finished');
     }
-
-    setIsLoading(false);
-    console.log('Generate completed: Loading finished');
   };
 
   const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
