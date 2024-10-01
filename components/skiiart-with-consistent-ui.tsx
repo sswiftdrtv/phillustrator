@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Wand2, Dice6, Download, Loader2 } from 'lucide-react';
+import { Wand2, Dice6, Download, Loader2, Info } from 'lucide-react';
 import Image from 'next/image';
 
 const backgroundImages = [
@@ -204,7 +204,9 @@ export default function Component() {
               </div>
               <div className="flex justify-between mt-2">
                 <button
+                  type="button"
                   onClick={handleRandomize}
+                  aria-label="Randomize"
                   className="w-12 h-12 flex items-center justify-center bg-white bg-opacity-10 hover:bg-opacity-20 transition-colors duration-200 rounded-lg"
                   disabled={isRandomizing || isLoading || isTyping}
                 >
@@ -222,6 +224,11 @@ export default function Component() {
                   )}
                 </button>
               </div>
+            </div>
+            
+            <div className="flex justify-center items-center mt-2 text-white text-xs">
+              <Info size={14} className="mr-1" />
+              <span>Include the trigger word &apos;PHIL&apos; in your prompt.</span>
             </div>
           </div>
         </main>
