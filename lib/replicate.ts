@@ -25,7 +25,7 @@ export async function generateImage(prompt: string): Promise<string[] | null> {
       const startResponse = await fetch(apiUrl, {
         method: 'POST',
         headers: {
-          'Authorization': `Token ${process.env.REPLICATE_API_KEY}`,
+          'Authorization': `Token ${process.env.REPLICATE_API_TOKEN}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
@@ -49,7 +49,7 @@ export async function generateImage(prompt: string): Promise<string[] | null> {
 
         const statusResponse = await fetch(getStatusUrl, {
           headers: {
-            'Authorization': `Token ${process.env.REPLICATE_API_KEY}`,
+            'Authorization': `Token ${process.env.REPLICATE_API_TOKEN}`,
           },
         });
 
@@ -67,6 +67,10 @@ export async function generateImage(prompt: string): Promise<string[] | null> {
       }
     } catch (error) {
       console.error("Error generating image:", error);
+      if (error instanceof Error) {
+        console.error("Error message:", error.message);
+        console.error("Error stack:", error.stack);
+      }
       return null;
     }
 }
