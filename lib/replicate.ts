@@ -14,9 +14,9 @@ export async function generateImage(prompt: string): Promise<string[] | null> {
       input: {
         prompt: fullPrompt,  // Use the combined prompt
         aspect_ratio: "16:9", 
-        num_outputs: 4,
+        num_outputs: 2,
         guidance_scale: 5,
-        num_inference_steps: 28,
+        num_inference_steps: 20,
         output_format: "png",
       }
     };

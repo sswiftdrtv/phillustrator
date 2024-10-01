@@ -13,7 +13,6 @@ const backgroundImages = [
 
 export default function Component() {
   const [prompt, setPrompt] = useState('');
-  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isRandomizing, setIsRandomizing] = useState(false);
   const [currentBackgroundIndex, setCurrentBackgroundIndex] = useState(0);
@@ -22,6 +21,7 @@ export default function Component() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [displayedPrompt, setDisplayedPrompt] = useState('');
   const [isTyping, setIsTyping] = useState(false);
+  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
 
   const placeholderText = "Bring Phil Swift to life in any scene with AI! Type your idea or roll the dice to get started...";
 
@@ -90,6 +90,7 @@ export default function Component() {
 
     setIsLoading(true);
     setShowLightbox(true);
+    setGeneratedImages([]);
     console.log('Generate clicked: Loading started');
 
     try {
@@ -106,11 +107,9 @@ export default function Component() {
         setGeneratedImages(data.imageUrls);
       } else {
         console.error('Unexpected response format:', data);
-        setGeneratedImages([]);
       }
     } catch (error) {
       console.error('Error generating images:', error);
-      setGeneratedImages([]);
     }
 
     setIsLoading(false);
@@ -123,26 +122,14 @@ export default function Component() {
     setIsTyping(false);
   };
 
-  const handleDownload = async (imageUrl: string, index: number) => {
-    try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `generated-image-${index + 1}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      console.error('Error downloading image:', error);
-    }
-  };
-
   const closeLightbox = () => {
     setShowLightbox(false);
     setGeneratedImages([]);
+  };
+
+  const handleDownload = (imageUrl: string, index: number) => {
+    // Implement download logic here
+    console.log(`Downloading image ${index + 1}: ${imageUrl}`);
   };
 
   return (
@@ -240,11 +227,11 @@ export default function Component() {
       </div>
 
       {showLightbox && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="relative w-[95vw] max-w-[800px] bg-gray-800 bg-opacity-90 rounded-lg shadow-xl overflow-hidden">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
+          <div className="relative w-full h-full max-w-[800px] bg-white bg-opacity-10 backdrop-filter backdrop-blur-lg overflow-y-auto border border-white border-opacity-20">
             <button
               onClick={closeLightbox}
-              className="absolute top-2 right-2 text-white hover:text-gray-300 transition-colors duration-200"
+              className="absolute top-3 right-3 text-white hover:text-gray-300 transition-colors duration-200 z-10"
               aria-label="Close lightbox"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -252,27 +239,55 @@ export default function Component() {
               </svg>
             </button>
             
-            <div className="flex items-center justify-center space-x-2 p-4 border-b border-gray-700">
-              <div className="w-5 h-5 border-t-2 border-white border-solid rounded-full animate-spin"></div>
-              <h2 className="text-xl font-semibold text-white">Loading...</h2>
-            </div>
+            {isLoading ? (
+              <>
+                <div className="flex items-center justify-center space-x-2 p-4 border-b border-white border-opacity-20">
+                  <div className="w-5 h-5 border-t-2 border-white border-solid rounded-full animate-spin"></div>
+                  <h2 className="text-xl font-semibold text-white">Generating Images...</h2>
+                </div>
 
-            <div className="p-4">
-              <div className="aspect-video w-full mb-4">
-                <iframe
-                  src="https://www.youtube.com/embed/H-HOI5a75t0?autoplay=1&cc_load_policy=1&cc_lang_pref=en"
-                  title="YouTube video player"
-                  frameBorder="0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                  className="w-full h-full rounded-lg"
-                ></iframe>
+                <div className="p-6">
+                  <div className="aspect-video w-full mb-6 rounded-lg overflow-hidden shadow-lg">
+                    <iframe
+                      src="https://www.youtube.com/embed/H-HOI5a75t0?autoplay=1&cc_load_policy=1&cc_lang_pref=en"
+                      title="YouTube video player"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      className="w-full h-full"
+                    ></iframe>
+                  </div>
+                  
+                  <p className="text-white text-sm text-center bg-black bg-opacity-30 rounded-lg p-3">
+                    Images take 30-60 seconds to generate. Check out our new commercial while you wait...
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="p-4 sm:p-6">
+                <h2 className="text-xl font-semibold text-white mb-4">Generated Images</h2>
+                <div className="grid grid-cols-1 gap-4">
+                  {generatedImages.map((imageUrl, index) => (
+                    <div key={index} className="relative">
+                      <Image
+                        src={imageUrl}
+                        alt={`Generated image ${index + 1}`}
+                        width={800}
+                        height={800}
+                        layout="responsive"
+                        className="rounded-lg"
+                      />
+                      <button
+                        onClick={() => handleDownload(imageUrl, index)}
+                        className="absolute bottom-2 right-2 bg-black bg-opacity-50 p-2 rounded-full text-white transition-opacity duration-200"
+                      >
+                        <Download size={20} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
-              
-              <p className="text-white text-sm text-center">
-                Images take 30-60 seconds to generate. Check out our new commercial while you wait...
-              </p>
-            </div>
+            )}
           </div>
         </div>
       )}
