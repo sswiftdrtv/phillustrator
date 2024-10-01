@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Wand2, Dice6, Download } from 'lucide-react';
+import { Wand2, Dice6, Download, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 
 const backgroundImages = [
@@ -216,7 +216,7 @@ export default function Component() {
                   className="w-12 h-12 flex items-center justify-center bg-white bg-opacity-10 hover:bg-opacity-20 transition-colors duration-200 rounded-lg"
                 >
                   {isLoading ? (
-                    <Loader2 className="animate-spin text-white" size={24} />
+                    <Loader2 className="w-6 h-6 animate-spin" />
                   ) : (
                     <Wand2 size={24} className="text-white" />
                   )}
