@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { generateImage } from '@/lib/replicate';
+import { startImageGeneration } from '@/lib/replicate';
 
 export const runtime = 'edge';
 
@@ -11,12 +11,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    const imageUrls = await generateImage(prompt);
+    const predictionId = await startImageGeneration(prompt);
 
-    if (imageUrls && imageUrls.length > 0) {
-      return NextResponse.json({ imageUrls }, { status: 200 });
+    if (predictionId) {
+      return NextResponse.json({ predictionId }, { status: 202 });
     } else {
-      return NextResponse.json({ error: 'Failed to generate images' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to start image generation' }, { status: 500 });
     }
   } catch (error) {
     console.error('Error in generate-image API:', error);

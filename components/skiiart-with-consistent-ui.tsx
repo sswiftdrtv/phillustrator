@@ -107,20 +107,41 @@ export default function Component() {
       }
 
       const data = await response.json();
-      if (data.imageUrls && Array.isArray(data.imageUrls)) {
-        setGeneratedImages(data.imageUrls);
+      if (data.predictionId) {
+        await pollForImages(data.predictionId);
       } else {
-        console.error('Unexpected response format:', data);
         throw new Error('Invalid response format');
       }
     } catch (error) {
       console.error('Error generating images:', error);
-      // Display an error message to the user
       alert('Failed to generate images. Please try again later.');
     } finally {
       setIsLoading(false);
       console.log('Generate completed: Loading finished');
     }
+  };
+
+  const pollForImages = async (predictionId: string) => {
+    const maxAttempts = 30;
+    const interval = 2000;
+
+    for (let i = 0; i < maxAttempts; i++) {
+      const response = await fetch(`/api/check-image-status?id=${predictionId}`);
+      const data = await response.json();
+
+      if (data.imageUrls && Array.isArray(data.imageUrls)) {
+        setGeneratedImages(data.imageUrls);
+        return;
+      }
+
+      if (data.status !== 'processing') {
+        throw new Error('Image generation failed');
+      }
+
+      await new Promise(resolve => setTimeout(resolve, interval));
+    }
+
+    throw new Error('Image generation timed out');
   };
 
   const handlePromptChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
